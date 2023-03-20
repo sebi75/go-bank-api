@@ -4,8 +4,23 @@ type CustomerRepositoryStub struct {
 	customers []Customer
 }
 
-func (s CustomerRepositoryStub) FindAll() ([]Customer, error) {
-	return s.customers, nil
+func (cr CustomerRepositoryStub) FindAll() ([]Customer, error) {
+	return cr.customers, nil
+}
+
+func (cr CustomerRepositoryStub) FindById(customerId string) (Customer, error) {
+	var customer Customer
+	for _, c := range cr.customers {
+		if c.Id == customerId {
+			customer = c
+			break;
+		}
+	}
+	//check if customer is empty, and if yes return an error
+	if (customer == Customer{}) {
+		return Customer{}, nil
+	}
+	return customer, nil
 }
 
 func NewCustomerRepositoryStub() CustomerRepositoryStub {

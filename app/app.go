@@ -15,9 +15,11 @@ func Start() {
 	// mux := http.NewServeMux()
 	router := mux.NewRouter()
 	//wiring
-	ch := handlers.CustomerHandlers{Service: service.NewCustomerService(domain.NewCustomerRepositoryStub())}
+	repository := domain.NewCustomerRepositoryStub()
+	ch := handlers.CustomerHandlers{Service: service.NewCustomerService(repository)}
 	//define routes
 	router.HandleFunc("/customers", ch.GetAllCustomers).Methods(http.MethodGet)
+	router.HandleFunc("customers/{customer_id:[0-9]+}", ch.GetCustomerById).Methods(http.MethodGet)
 
 	//starting server
 	log.Fatal(http.ListenAndServe(":8080", router))
