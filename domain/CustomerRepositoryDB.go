@@ -49,7 +49,7 @@ func (d CustomerRepositoryDB) FindById(customerId string) (Customer, error) {
 }
 
 func NewCustomerRepositoryDB() CustomerRepositoryDB {
-	client, err := sql.Open("mysql", "root:qWeR1@1`@localhost:3306/banking")
+	client, err := sql.Open("mysql", "root:qWeR1@1`@tcp(localhost:3306)/banking")
 	if err != nil {
 		panic(err.Error())
 	}

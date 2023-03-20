@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"go-bank-api/service"
+	"log"
 	"net/http"
 )
 
@@ -17,6 +18,7 @@ type CustomerHandlers struct {
 }
 
 func (ch *CustomerHandlers) GetAllCustomers(w http.ResponseWriter, request *http.Request) {
+	log.Println("GetAllCustomers")
 	switch contentType := request.Header.Get("Content-Type"); contentType {
 		case "application/json":
 			w.Header().Set("Content-Type", "application/json")
