@@ -5,6 +5,8 @@ import (
 	"go-bank-api/service"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type Customer struct {
@@ -40,18 +42,21 @@ func (ch *CustomerHandlers) GetAllCustomers(w http.ResponseWriter, request *http
 }
 
 func (ch *CustomerHandlers) GetCustomerById(w http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	customerId := vars["customer_id"]
 	switch contentType := request.Header.Get("Content-Type"); contentType {
 		case "application/json":
 			w.Header().Set("Content-Type", "application/json")
-			customer, error := ch.Service.GetCustomerById("100")
-			if error != nil {
-				w.WriteHeader(http.StatusInternalServerError)
+			customer, err := ch.Service.GetCustomerById(customerId)
+			if err != nil {
+				w.WriteHeader(err.Code)
+				json.NewEncoder(w).Encode(err)
 				return
 			}
 			json.NewEncoder(w).Encode(customer)
 		default:
 			w.Header().Set("Content-Type", "application/json")
-			customer, error := ch.Service.GetCustomerById("100")
+			customer, error := ch.Service.GetCustomerById(customerId)
 			if error != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return

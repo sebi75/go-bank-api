@@ -2,6 +2,7 @@ package domain
 
 import (
 	"database/sql"
+	"go-bank-api/errs"
 	"log"
 	"time"
 
@@ -35,17 +36,22 @@ func (d CustomerRepositoryDB) FindAll() ([]Customer, error) {
 	return customers, nil
 }
 
-func (d CustomerRepositoryDB) FindById(customerId string) (Customer, error) {
-	var customer Customer
-	findByIdSql := "select * from customers where customer_id = ?"
-	row := d.client.QueryRow(findByIdSql, customerId)
-	err := row.Scan(&customer.Id, &customer.Name, &customer.City, &customer.Zipcode, &customer.DateofBirth, &customer.Status)
+func (cr CustomerRepositoryDB) FindById(id string) (*Customer, *errs.AppError) {
+	var c Customer
+
+	customerSQL := "select id, name, date_of_birth, city, zipcode, status from customers where id = ?"
+	row := cr.client.QueryRow(customerSQL, id)
+	
+	err := row.Scan(&c.Id, &c.Name, &c.City, &c.Zipcode, &c.DateofBirth, &c.Status)
 	if err != nil {
-		log.Println("Error while scanning customer row into struct", err.Error())
-		return Customer{}, err
+		if err == sql.ErrNoRows {
+			return nil, errs.NewNotFoundError("Customer not found")
+		} else {
+			return nil, errs.NewUnexpectedError("Unexpected database error")
+		}
 	}
 
-	return customer, nil
+	return &c, nil
 }
 
 func NewCustomerRepositoryDB() CustomerRepositoryDB {
@@ -56,6 +62,8 @@ func NewCustomerRepositoryDB() CustomerRepositoryDB {
 	client.SetConnMaxLifetime(time.Minute * 3)
 	client.SetMaxOpenConns(10)
 	client.SetMaxIdleConns(10)
+
+	log.Println("Database connection successful")
 
 	return CustomerRepositoryDB{
 		client: client,

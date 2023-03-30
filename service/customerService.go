@@ -1,10 +1,13 @@
 package service
 
-import "go-bank-api/domain"
+import (
+	"go-bank-api/domain"
+	"go-bank-api/errs"
+)
 
 type CustomerService interface {
 	GetAllCustomers() ([]domain.Customer, error)
-	GetCustomerById(customerId string) (domain.Customer, error)
+	GetCustomerById(customerId string) (*domain.Customer, *errs.AppError)
 }
 
 type DefaultCustomerService struct {
@@ -15,7 +18,7 @@ func (service DefaultCustomerService) GetAllCustomers() ([]domain.Customer, erro
 	return service.repo.FindAll()
 }
 
-func (service DefaultCustomerService) GetCustomerById(customerId string) (domain.Customer, error) {
+func (service DefaultCustomerService) GetCustomerById(customerId string) (*domain.Customer, *errs.AppError) {
 	return service.repo.FindById(customerId)
 }
 
