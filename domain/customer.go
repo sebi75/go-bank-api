@@ -14,4 +14,5 @@ type Customer struct {
 type CustomerRepository interface {
 	FindAll() ([]Customer, error)
 	FindById(customerId string) (*Customer, *errs.AppError)
+	CreateCustomer(customer Customer) (*Customer, *errs.AppError)
 }

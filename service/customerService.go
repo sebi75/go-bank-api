@@ -8,6 +8,7 @@ import (
 type CustomerService interface {
 	GetAllCustomers() ([]domain.Customer, error)
 	GetCustomerById(customerId string) (*domain.Customer, *errs.AppError)
+	CreateCustomer(customer domain.Customer) (*domain.Customer, *errs.AppError)
 }
 
 type DefaultCustomerService struct {
@@ -20,6 +21,10 @@ func (service DefaultCustomerService) GetAllCustomers() ([]domain.Customer, erro
 
 func (service DefaultCustomerService) GetCustomerById(customerId string) (*domain.Customer, *errs.AppError) {
 	return service.repo.FindById(customerId)
+}
+
+func (service DefaultCustomerService) CreateCustomer(customer domain.Customer) (*domain.Customer, *errs.AppError) {
+	return service.repo.CreateCustomer(customer)
 }
 
 func NewCustomerService(repository domain.CustomerRepository) DefaultCustomerService {

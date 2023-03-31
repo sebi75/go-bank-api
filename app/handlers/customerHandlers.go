@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
+	"go-bank-api/domain"
+	"go-bank-api/errs"
 	"go-bank-api/service"
 	"log"
 	"net/http"
@@ -12,6 +14,7 @@ import (
 type Customer struct {
 	Name string `json:"name" xml:"name"`
 	City string `json:"city" xml:"city"`
+	DateOfBirth string `json:"dateOfBirth" xml:"dateOfBirth"`
 	Zipcode string `json:"zipcode" xml:"zipcode"`
 }
 
@@ -39,6 +42,24 @@ func (ch *CustomerHandlers) GetAllCustomers(w http.ResponseWriter, request *http
 			}
 			json.NewEncoder(w).Encode(customers)
 	}
+}
+
+func (ch *CustomerHandlers) CreateCustomer(w http.ResponseWriter, request *http.Request) {
+	var customer domain.Customer
+	err := json.NewDecoder(request.Body).Decode(&customer)
+	w.Header().Set("Content-Type", "application/json")
+	if err != nil {
+		customErr := errs.NewBadRequestError("Invalid JSON body for customer")
+		w.WriteHeader(customErr.Code)
+		json.NewEncoder(w).Encode(customErr)
+	}
+	customerCreated, errr := ch.Service.CreateCustomer(customer)
+	if err != nil {
+		w.WriteHeader(errr.Code)
+		json.NewEncoder(w).Encode(errr)
+	}
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(customerCreated)
 }
 
 func (ch *CustomerHandlers) GetCustomerById(w http.ResponseWriter, request *http.Request) {

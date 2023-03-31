@@ -8,6 +8,11 @@ func (cr CustomerRepositoryStub) FindAll() ([]Customer, error) {
 	return cr.customers, nil
 }
 
+func (cr CustomerRepositoryStub) CreateCustomer(customer Customer) (*Customer, error) {
+	cr.customers = append(cr.customers, customer)
+	return &customer, nil
+}
+
 func (cr CustomerRepositoryStub) FindById(customerId string) (Customer, error) {
 	var customer Customer
 	for _, c := range cr.customers {

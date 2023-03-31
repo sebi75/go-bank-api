@@ -36,6 +36,21 @@ func (d CustomerRepositoryDB) FindAll() ([]Customer, error) {
 	return customers, nil
 }
 
+func (cr CustomerRepositoryDB) CreateCustomer(customer Customer) (*Customer, *errs.AppError) {
+	insertSQL := "insert into customers (name, city, zipcode, date_of_birth) values (?, ?, ?, ?)"
+	createdCustomer, err := cr.client.Exec(insertSQL, customer.Name, customer.City, customer.Zipcode, customer.DateofBirth)
+	if err != nil {
+		return nil, errs.NewUnexpectedError("Unexpected database error")
+	}
+	//now get the newly created customer id
+	id, err := createdCustomer.LastInsertId()
+	if err != nil {
+		return nil, errs.NewUnexpectedError("Unexpected database error")
+	}
+	customer.Id = string(id)
+	return &customer, nil
+}
+
 func (cr CustomerRepositoryDB) FindById(id string) (*Customer, *errs.AppError) {
 	var c Customer
 
