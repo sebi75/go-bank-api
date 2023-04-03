@@ -3,12 +3,12 @@ package domain
 import "go-bank-api/errs"
 
 type Customer struct {
-	Id string
-	Name string
-	City string
-	Zipcode string
+	Id          string
+	Name        string
+	City        string
+	Zipcode     string
 	DateofBirth string
-	Status string
+	Status      string
 }
 
 type CustomerRepository interface {

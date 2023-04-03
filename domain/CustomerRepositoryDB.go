@@ -56,7 +56,7 @@ func (cr CustomerRepositoryDB) FindById(id string) (*Customer, *errs.AppError) {
 
 	customerSQL := "select id, name, date_of_birth, city, zipcode, status from customers where id = ?"
 	row := cr.client.QueryRow(customerSQL, id)
-	
+
 	err := row.Scan(&c.Id, &c.Name, &c.City, &c.Zipcode, &c.DateofBirth, &c.Status)
 	if err != nil {
 		if err == sql.ErrNoRows {

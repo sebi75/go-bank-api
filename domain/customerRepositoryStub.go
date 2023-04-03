@@ -18,7 +18,7 @@ func (cr CustomerRepositoryStub) FindById(customerId string) (Customer, error) {
 	for _, c := range cr.customers {
 		if c.Id == customerId {
 			customer = c
-			break;
+			break
 		}
 	}
 	//check if customer is empty, and if yes return an error
