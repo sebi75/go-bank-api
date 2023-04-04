@@ -54,9 +54,10 @@ func (ch *CustomerHandlers) CreateCustomer(w http.ResponseWriter, request *http.
 		json.NewEncoder(w).Encode(customErr)
 	}
 	customerCreated, errr := ch.Service.CreateCustomer(customer)
-	if err != nil {
+	if errr != nil {
 		w.WriteHeader(errr.Code)
 		json.NewEncoder(w).Encode(errr)
+		return
 	}
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(customerCreated)

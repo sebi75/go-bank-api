@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"go-bank-api/errs"
 	"log"
+	"strconv"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -40,14 +41,17 @@ func (cr CustomerRepositoryDB) CreateCustomer(customer Customer) (*Customer, *er
 	insertSQL := "insert into customers (name, city, zipcode, date_of_birth) values (?, ?, ?, ?)"
 	createdCustomer, err := cr.client.Exec(insertSQL, customer.Name, customer.City, customer.Zipcode, customer.DateofBirth)
 	if err != nil {
+		log.Println("Error while creating customer: ", err.Error())
 		return nil, errs.NewUnexpectedError("Unexpected database error")
 	}
 	//now get the newly created customer id
 	id, err := createdCustomer.LastInsertId()
 	if err != nil {
+		log.Println("Error while getting last insert id for new customer: ", err.Error())
 		return nil, errs.NewUnexpectedError("Unexpected database error")
 	}
-	customer.Id = string(id)
+	//convert the last inserted id to a string with Ioc
+	customer.Id = strconv.FormatInt(id, 10)
 	return &customer, nil
 }
 
@@ -70,7 +74,7 @@ func (cr CustomerRepositoryDB) FindById(id string) (*Customer, *errs.AppError) {
 }
 
 func NewCustomerRepositoryDB() CustomerRepositoryDB {
-	client, err := sql.Open("mysql", "root:qWeR1@1`@tcp(localhost:3306)/banking")
+	client, err := sql.Open("mysql", "root:qwerty123432@tcp(localhost:3306)/banking")
 	if err != nil {
 		panic(err.Error())
 	}
