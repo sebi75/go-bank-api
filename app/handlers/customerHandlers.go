@@ -11,13 +11,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Customer struct {
-	Name        string `json:"name" xml:"name"`
-	City        string `json:"city" xml:"city"`
-	DateOfBirth string `json:"dateOfBirth" xml:"dateOfBirth"`
-	Zipcode     string `json:"zipcode" xml:"zipcode"`
-}
-
 type CustomerHandlers struct {
 	Service service.CustomerService
 }
