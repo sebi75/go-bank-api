@@ -4,7 +4,7 @@ type CustomerRepositoryStub struct {
 	customers []Customer
 }
 
-func (cr CustomerRepositoryStub) FindAll() ([]Customer, error) {
+func (cr CustomerRepositoryStub) FindAll(status string) ([]Customer, error) {
 	return cr.customers, nil
 }
 

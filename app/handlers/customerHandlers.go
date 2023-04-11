@@ -17,7 +17,7 @@ type CustomerHandlers struct {
 
 func (ch *CustomerHandlers) GetAllCustomers(w http.ResponseWriter, request *http.Request) {
 	log.Println("GetAllCustomers")
-	customers, err := ch.Service.GetAllCustomers()
+	customers, err := ch.Service.GetAllCustomers("")
 
 	if err != nil {
 		responseWriter(w, err.Code, err.AsMessage())
@@ -45,20 +45,15 @@ func (ch *CustomerHandlers) CreateCustomer(w http.ResponseWriter, request *http.
 func (ch *CustomerHandlers) GetCustomerById(w http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	customerId := vars["customer_id"]
-	switch contentType := request.Header.Get("Content-Type"); contentType {
-	case "application/json":
-		customer, err := ch.Service.GetCustomerById(customerId)
-		if err != nil {
-			responseWriter(w, err.Code, err.AsMessage())
-		}
-		json.NewEncoder(w).Encode(customer)
-	default:
-		customer, err := ch.Service.GetCustomerById(customerId)
-		if err != nil {
-			responseWriter(w, err.Code, err.AsMessage())
-		}
-		json.NewEncoder(w).Encode(customer)
+
+	customer, err := ch.Service.GetCustomerById(customerId)
+	
+	if err != nil {
+		responseWriter(w, err.Code, err.AsMessage())
 	}
+	
+	responseWriter(w, http.StatusOK, customer)
+
 }
 
 func responseWriter(w http.ResponseWriter, code int, data interface{}) {
