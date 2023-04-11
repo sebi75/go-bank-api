@@ -13,7 +13,6 @@ import (
 
 func Start() {
 
-	env.SanityCheck()
 	// mux := http.NewServeMux()
 	router := mux.NewRouter()
 	//wiring
