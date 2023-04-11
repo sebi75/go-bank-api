@@ -1,6 +1,9 @@
 package domain
 
-import "go-bank-api/errs"
+import (
+	"go-bank-api/dto"
+	"go-bank-api/errs"
+)
 
 type Account struct {
 	AccountId string
@@ -11,7 +14,12 @@ type Account struct {
 	Status string
 }
 
+func (a Account) ToNewAccountResponseDto() *dto.NewAccountResponse {
+	return &dto.NewAccountResponse{
+		AccountId: a.AccountId,
+	}
+}
+
 type AccountRepository interface {
-	GetAllAccount() ([]Account, *errs.AppError)
 	Save(Account) (*Account, *errs.AppError)
 }

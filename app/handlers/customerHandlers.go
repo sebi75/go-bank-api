@@ -5,6 +5,7 @@ import (
 	"go-bank-api/domain"
 	"go-bank-api/errs"
 	"go-bank-api/service"
+	"go-bank-api/utils"
 	"log"
 	"net/http"
 
@@ -20,10 +21,10 @@ func (ch *CustomerHandlers) GetAllCustomers(w http.ResponseWriter, request *http
 	customers, err := ch.Service.GetAllCustomers("")
 
 	if err != nil {
-		responseWriter(w, err.Code, err.AsMessage())
+		utils.ResponseWriter(w, err.Code, err.AsMessage())
 	}
 
-	responseWriter(w, http.StatusOK, customers)
+	utils.ResponseWriter(w, http.StatusOK, customers)
 }
 
 func (ch *CustomerHandlers) CreateCustomer(w http.ResponseWriter, request *http.Request) {
@@ -31,11 +32,11 @@ func (ch *CustomerHandlers) CreateCustomer(w http.ResponseWriter, request *http.
 	err := json.NewDecoder(request.Body).Decode(&customer)
 	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
-		responseWriter(w, http.StatusBadRequest, errs.NewBadRequestError("Invalid JSON body"))
+		utils.ResponseWriter(w, http.StatusBadRequest, errs.NewBadRequestError("Invalid JSON body"))
 	}
 	customerCreated, errr := ch.Service.CreateCustomer(customer)
 	if errr != nil {
-		responseWriter(w, errr.Code, errr.AsMessage())
+		utils.ResponseWriter(w, errr.Code, errr.AsMessage())
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
@@ -49,15 +50,9 @@ func (ch *CustomerHandlers) GetCustomerById(w http.ResponseWriter, request *http
 	customer, err := ch.Service.GetCustomerById(customerId)
 	
 	if err != nil {
-		responseWriter(w, err.Code, err.AsMessage())
+		utils.ResponseWriter(w, err.Code, err.AsMessage())
 	}
 	
-	responseWriter(w, http.StatusOK, customer)
+	utils.ResponseWriter(w, http.StatusOK, customer)
 
-}
-
-func responseWriter(w http.ResponseWriter, code int, data interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	json.NewEncoder(w).Encode(data)
 }
