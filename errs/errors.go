@@ -3,8 +3,14 @@ package errs
 import "net/http"
 
 type AppError struct {
-	Code    int
-	Message string
+	Code    int `json:",omitempty"` //omitempty means that if the value is empty, it will not be included in the JSON response
+	Message string `json:"message"`
+}
+
+func (err AppError) AsMessage() *AppError {
+	return &AppError{
+		Message: err.Message,
+	}
 }
 
 func NewNotFoundError(message string) *AppError {
