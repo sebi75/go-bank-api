@@ -2,10 +2,10 @@ package main
 
 import (
 	app "go-bank-api/app"
-	"fmt"
+	logger "go-bank-api/logger"
 )
 
 func main() {
-	fmt.Println("App starting...")
+	logger.Info("Starting the application...")
 	app.Start()
 }

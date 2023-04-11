@@ -3,7 +3,7 @@ package domain
 import (
 	"database/sql"
 	"go-bank-api/errs"
-	"log"
+	"go-bank-api/logger"
 	"strconv"
 	"time"
 
@@ -23,7 +23,7 @@ func (d CustomerRepositoryDB) FindAll() ([]Customer, *errs.AppError) {
 		if err == sql.ErrNoRows {
 			return nil, errs.NewNotFoundError("No customers found")
 		} else {
-			log.Println("Error while querying customer table", err.Error())
+			logger.Error("Error while querying customer table" + err.Error())
 			return nil, errs.NewUnexpectedError("Unexpected database error")
 		}
 	}
@@ -32,7 +32,7 @@ func (d CustomerRepositoryDB) FindAll() ([]Customer, *errs.AppError) {
 		var customer Customer
 		err := rows.Scan(&customer.Id, &customer.Name, &customer.City, &customer.Zipcode, &customer.DateofBirth, &customer.Status)
 		if err != nil {
-			log.Println("Error while scanning customer rows", err.Error())
+			logger.Error("Error while scanning customer rows" + err.Error())
 			return nil, errs.NewUnexpectedError("Unexpected database error")
 		}
 		customers = append(customers, customer)
@@ -45,13 +45,13 @@ func (cr CustomerRepositoryDB) CreateCustomer(customer Customer) (*Customer, *er
 	insertSQL := "insert into customers (name, city, zipcode, date_of_birth) values (?, ?, ?, ?)"
 	createdCustomer, err := cr.client.Exec(insertSQL, customer.Name, customer.City, customer.Zipcode, customer.DateofBirth)
 	if err != nil {
-		log.Println("Error while creating customer: ", err.Error())
+		logger.Error("Error while creating customer: " + err.Error())
 		return nil, errs.NewUnexpectedError("Unexpected database error")
 	}
 	//now get the newly created customer id
 	id, err := createdCustomer.LastInsertId()
 	if err != nil {
-		log.Println("Error while getting last insert id for new customer: ", err.Error())
+		logger.Error("Error while getting last insert id for new customer: " + err.Error())
 		return nil, errs.NewUnexpectedError("Unexpected database error")
 	}
 	//convert the last inserted id to a string with Ioc
@@ -86,7 +86,7 @@ func NewCustomerRepositoryDB() CustomerRepositoryDB {
 	client.SetMaxOpenConns(10)
 	client.SetMaxIdleConns(10)
 
-	log.Println("Database connection successful")
+	logger.Info("Database connection successful")
 
 	return CustomerRepositoryDB{
 		client: client,
