@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"go-bank-api/env"
 	"go-bank-api/errs"
 	"go-bank-api/logger"
 	"strconv"
@@ -85,8 +86,9 @@ func (cr CustomerRepositoryDB) FindById(id string) (*Customer, *errs.AppError) {
 	return &c, nil
 }
 
-func NewCustomerRepositoryDB() CustomerRepositoryDB {
-	client, err := sqlx.Open("mysql", "root:qWeR1@1`@tcp(localhost:3306)/banking")
+func NewCustomerRepositoryDB(config *env.Config) CustomerRepositoryDB {
+	connectionString := config.DbUser + ":" + config.DbPass + "@tcp(" + config.DbHost + ":" + config.DbPort + ")/" + config.DbName
+	client, err := sqlx.Open("mysql", connectionString)
 	if err != nil {
 		panic(err.Error())
 	}
