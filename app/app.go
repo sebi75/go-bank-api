@@ -21,9 +21,11 @@ func Start() {
 	// repository := domain.NewCustomerRepositoryStub() // mock repository implementing all the methods of a normal db repository for testing purposes
 	customersRepository := domain.NewCustomerRepositoryDB(dbClient)
 	accountRepository := domain.NewAccountRepositoryDB(dbClient)
+	transactionRepository := domain.NewTransactionRepositoryDB(dbClient)
 
 	ch := handlers.CustomerHandlers{Service: service.NewCustomerService(customersRepository)}
 	ah := handlers.AccountHandler{Service: service.NewAccountService(accountRepository)}
+	th := handlers.DefaultTransactionHandlers{Service: service.NewTransactionService(transactionRepository)}
 	//define routes
 
 	//customer routes
@@ -33,6 +35,9 @@ func Start() {
 
 	//account routes
 	router.HandleFunc("/accounts/{customer_id:[0-9]+}/account", ah.NewAccount).Methods(http.MethodPost)
+
+	//transaction router
+	router.HandleFunc("/transactions/{account_id:[0-9]+}/transaction", th.NewTransaction).Methods(http.MethodPost)
 
 	//starting server
 	log.Fatal(http.ListenAndServe(":8080", router))
