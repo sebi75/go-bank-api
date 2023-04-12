@@ -1,9 +1,12 @@
 package domain
 
-import errs "banking-auth/error"
+import (
+	"banking-auth/dto"
+	errs "banking-auth/error"
+)
 
 type User struct {
-	Id  int
+	Id  string
 	Username string
 	Password string
 	CustomerId int
@@ -12,4 +15,12 @@ type User struct {
 type UserRepository interface {
 	FindById(string) (*User, *errs.AppError)
 	Create(User) (*User, *errs.AppError)
+}
+
+func (u User) ToNewUserResponseDto() *dto.NewUserResponse {
+	return &dto.NewUserResponse{
+		UserId: u.Id,
+		Username: u.Username,
+		CustomerId: u.CustomerId,
+	}
 }

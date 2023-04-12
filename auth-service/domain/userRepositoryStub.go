@@ -32,7 +32,7 @@ func (r DefaultUserRepository) Create(user User) (*User, *errs.AppError) {
 
 func NewUserRepositoryStub() UserRepository {
 	users := make(map[string]*User)
-	users["1"] = &User{Id: 1, Username: "username1", Password: "password1", CustomerId: 1}
-	users["2"] = &User{Id: 2, Username: "username2", Password: "password2", CustomerId: 2}
+	users["1"] = &User{Id: "1", Username: "username1", Password: "password1", CustomerId: 1}
+	users["2"] = &User{Id: "2", Username: "username2", Password: "password2", CustomerId: 2}
 	return &DefaultUserRepository{users: users}
 }
