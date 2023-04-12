@@ -27,10 +27,14 @@ func Start() {
 	//initialize the handler and the service
 	uh := handlers.NewUserHandler(service.NewUserService(userRepository))
 
+	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("pong"))
+	})
 	router.HandleFunc("/auth/register", uh.CreateUser).Methods(http.MethodPost)
 
 	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")
+
 	log.Println("Starting server on address: " + address + " and port: " + port)
 	log.Fatal(http.ListenAndServe(address+":"+port, router))
 }
