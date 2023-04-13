@@ -10,6 +10,7 @@ type User struct {
 	Username string
 	Password string
 	CustomerId int
+	Role string
 }
 
 type UserRepository interface {
