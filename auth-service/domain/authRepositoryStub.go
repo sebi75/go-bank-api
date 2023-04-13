@@ -20,6 +20,15 @@ func (r DefaultAuthRepositoryStub) FindById(userId string) (*User, *errs.AppErro
 	return user, nil
 }
 
+func (r DefaultAuthRepositoryStub) FindByUsername(username string) (*User, *errs.AppError) {
+	for _, user := range r.users {
+		if user.Username == username {
+			return user, nil
+		}
+	}
+	return nil, errs.NewNotFoundError("user not found")
+}
+
 func (r DefaultAuthRepositoryStub) CreateUser(user User) (*User, *errs.AppError) {
 	existingUser := r.users[user.Username]
 	if existingUser != nil {
@@ -28,7 +37,6 @@ func (r DefaultAuthRepositoryStub) CreateUser(user User) (*User, *errs.AppError)
 	r.users[user.Username] = &user
 	return &user, nil
 }
-
 
 func NewAutRepositoryStub() AuthRepository {
 	users := make(map[string]*User)

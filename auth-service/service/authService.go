@@ -6,15 +6,16 @@ import (
 	errs "banking-auth/error"
 )
 
-type UserService interface {
+type AuthService interface {
 	CreateUser(dto.RegisterRequest) (*dto.RegisterResponse, *errs.AppError)
+	LoginUser(dto.LoginRequest) (*dto.LoginResponse, *errs.AppError)
 }
 
-type DefaultUserService struct {
+type DefaultAuthService struct {
 	repo domain.AuthRepository
 }
 
-func (us DefaultUserService) CreateUser(req dto.RegisterRequest) (*dto.RegisterResponse, *errs.AppError) {
+func (us DefaultAuthService) CreateUser(req dto.RegisterRequest) (*dto.RegisterResponse, *errs.AppError) {
 	req.Validate()
 
 	//transform the NewUserRequest to User domain to save in db
@@ -23,6 +24,7 @@ func (us DefaultUserService) CreateUser(req dto.RegisterRequest) (*dto.RegisterR
 		Username:   req.Username,
 		Password:   req.Password,
 		CustomerId: req.CustomerId,
+		Role: "USER",
 	}
 	//call the repository method to save the user to the database
 	user, err := us.repo.CreateUser(domainUser)
@@ -40,6 +42,30 @@ func (us DefaultUserService) CreateUser(req dto.RegisterRequest) (*dto.RegisterR
 	}, nil
 }
 
-func NewUserService(repo domain.AuthRepository) DefaultUserService {
-	return DefaultUserService{repo: repo}
+func (us DefaultAuthService) LoginUser(req dto.LoginRequest) (*dto.LoginResponse, *errs.AppError) {
+	req.Validate()
+
+	//call the repository method to find the user by username
+	user, err := us.repo.FindByUsername(req.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	//compare the password
+	if user.Password != req.Password {
+		return nil, errs.NewValidationError("invalid password")
+	}
+
+	token, tokenErr := user.GenerateToken()
+	if tokenErr != nil {
+		return nil, tokenErr
+	}
+
+	return &dto.LoginResponse{
+		Token: token,
+	}, nil
+}
+
+func NewUserService(repo domain.AuthRepository) DefaultAuthService {
+	return DefaultAuthService{repo: repo}
 }

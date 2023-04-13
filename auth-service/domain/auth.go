@@ -11,12 +11,13 @@ type User struct {
 	Id  string
 	Username string
 	Password string
-	CustomerId int
+	CustomerId int `db:"customer_id"`
 	Role string
 }
 
 type AuthRepository interface {
 	FindById(string) (*User, *errs.AppError)
+	FindByUsername(string) (*User, *errs.AppError)
 	CreateUser(User) (*User, *errs.AppError)
 }
 

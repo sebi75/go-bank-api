@@ -19,18 +19,19 @@ func Start() {
 
 	router := mux.NewRouter()
 	config := env.GetConfig()
-	_ = db.GetDbClient(config) // use the client to initialize the repositories
+	dbClient := db.GetDbClient(config) // use the client to initialize the repositories
 
 	//initialize repository
-	userRepository := domain.NewAutRepositoryStub() // mock repository
+	authRepository := domain.NewAuthRepostoryDB(dbClient);
 
 	//initialize the handler and the service
-	uh := handlers.NewUserHandler(service.NewUserService(userRepository))
+	uh := handlers.NewUserHandler(service.NewUserService(authRepository))
 
 	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("pong"))
 	})
 	router.HandleFunc("/auth/register", uh.Register).Methods(http.MethodPost)
+	router.HandleFunc("/auth/login", uh.Login).Methods(http.MethodPost)
 
 	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")
