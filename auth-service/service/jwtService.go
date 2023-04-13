@@ -8,7 +8,14 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateToken(user *domain.User) (string, error) {
+type TokenService interface {
+	GenerateToken(user *domain.User) (string, error)
+	VerifyToken(tokenString string) (*jwt.Token, error)
+}
+
+type DefaultTokenService struct {}
+
+func (sv DefaultTokenService) GenerateToken(user *domain.User) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["customer_id"] = user.CustomerId
 	claims["user_id"] = user.Id
@@ -24,4 +31,18 @@ func GenerateToken(user *domain.User) (string, error) {
 	}
 	logger.Info("tokenString: " + tokenString)
 	return tokenString, nil
+}
+
+func (sv DefaultTokenService) VerifyToken(tokenString string) (*jwt.Token, error) {
+	secretBytes := []byte(os.Getenv("JWT_SECRET"))
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return secretBytes, nil
+	})
+
+	if err != nil {
+		logger.Error("Error while parsing the token: " + err.Error())
+		return nil, err
+	}
+
+	return token, nil
 }
