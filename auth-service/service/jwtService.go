@@ -2,6 +2,7 @@ package service
 
 import (
 	"banking-auth/domain"
+	errs "banking-auth/error"
 	"banking-auth/logger"
 	"os"
 
@@ -17,7 +18,7 @@ type DefaultTokenService struct {
 	secret []byte
 }
 
-func (sv DefaultTokenService) GenerateToken(user *domain.User) (string, error) {
+func (sv DefaultTokenService) GenerateToken(user *domain.User) (string, *errs.AppError) {
 	claims := jwt.MapClaims{}
 	claims["customer_id"] = user.CustomerId
 	claims["user_id"] = user.Id
@@ -28,7 +29,7 @@ func (sv DefaultTokenService) GenerateToken(user *domain.User) (string, error) {
 
 	if err != nil {
 		logger.Error("Error while signing the token: " + err.Error())
-		return "", err
+		return "", errs.NewUnexpectedError("Unexpected error from JWT library")
 	}
 	logger.Info("tokenString: " + tokenString)
 	return tokenString, nil

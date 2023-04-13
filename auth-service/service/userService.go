@@ -16,6 +16,7 @@ type DefaultUserService struct {
 
 func (us DefaultUserService) CreateUser(req dto.NewUserRequest) (*dto.NewUserResponse, *errs.AppError) {
 	req.Validate()
+	defaultTokenService := NewDefaultTokenService()
 
 	//transform the NewUserRequest to User domain to save in db
 	domainUser := domain.User{
@@ -31,7 +32,14 @@ func (us DefaultUserService) CreateUser(req dto.NewUserRequest) (*dto.NewUserRes
 		return nil, err
 	}
 
-	return user.ToNewUserResponseDto(), nil
+	userResponse := user.ToNewUserResponseDto()
+	token, tokenErr  := defaultTokenService.GenerateToken(user)
+	if tokenErr !=  nil {
+		return nil, err
+	}
+	userResponse.Token = token
+
+	return userResponse, nil
 }
 
 func NewUserService(repo domain.UserRepository) DefaultUserService {

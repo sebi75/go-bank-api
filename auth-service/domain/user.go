@@ -23,5 +23,6 @@ func (u User) ToNewUserResponseDto() *dto.NewUserResponse {
 		UserId: u.Id,
 		Username: u.Username,
 		CustomerId: u.CustomerId,
+		Role: u.Role,
 	}
 }
