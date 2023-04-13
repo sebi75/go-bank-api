@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"banking-auth/dto"
 	errs "banking-auth/error"
 )
 
@@ -13,16 +12,7 @@ type User struct {
 	Role string
 }
 
-type UserRepository interface {
+type AuthRepository interface {
 	FindById(string) (*User, *errs.AppError)
 	Create(User) (*User, *errs.AppError)
-}
-
-func (u User) ToNewUserResponseDto() *dto.NewUserResponse {
-	return &dto.NewUserResponse{
-		UserId: u.Id,
-		Username: u.Username,
-		CustomerId: u.CustomerId,
-		Role: u.Role,
-	}
 }

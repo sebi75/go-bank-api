@@ -16,8 +16,8 @@ type UserHandler struct {
 The create user handler should create a new user in the database
 and and sign the newly created user, returning a JWT token
 */
-func (uh UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var userRequest dto.NewUserRequest
+func (uh UserHandler) Register(w http.ResponseWriter, r *http.Request) {
+	var userRequest dto.RegisterRequest
 	err := json.NewDecoder(r.Body).Decode(&userRequest)
 	if err != nil {
 		utils.ResponseWriter(w, http.StatusBadRequest, err.Error())

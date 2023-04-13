@@ -22,7 +22,7 @@ func Start() {
 	_ = db.GetDbClient(config) // use the client to initialize the repositories
 
 	//initialize repository
-	userRepository := domain.NewUserRepositoryStub()
+	userRepository := domain.NewAutRepositoryStub() // mock repository
 
 	//initialize the handler and the service
 	uh := handlers.NewUserHandler(service.NewUserService(userRepository))
@@ -30,7 +30,7 @@ func Start() {
 	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("pong"))
 	})
-	router.HandleFunc("/auth/register", uh.CreateUser).Methods(http.MethodPost)
+	router.HandleFunc("/auth/register", uh.Register).Methods(http.MethodPost)
 
 	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")
