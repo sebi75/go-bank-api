@@ -8,11 +8,11 @@ This is a stub implementation of the UserRepository interface.
 This can be used for testing purposes, or for a quick and dirty implementation of the UserRepository interface.
 */
 
-type DefaultAuthRepository struct {
+type DefaultAuthRepositoryStub struct {
 	users map[string]*User
 }
 
-func (r DefaultAuthRepository) FindById(userId string) (*User, *errs.AppError) {
+func (r DefaultAuthRepositoryStub) FindById(userId string) (*User, *errs.AppError) {
 	user := r.users[userId]
 	if user == nil {
 		return nil, errs.NewNotFoundError("user not found")
@@ -20,7 +20,7 @@ func (r DefaultAuthRepository) FindById(userId string) (*User, *errs.AppError) {
 	return user, nil
 }
 
-func (r DefaultAuthRepository) Create(user User) (*User, *errs.AppError) {
+func (r DefaultAuthRepositoryStub) CreateUser(user User) (*User, *errs.AppError) {
 	existingUser := r.users[user.Username]
 	if existingUser != nil {
 		return nil, errs.NewBadRequestError("username already exists")
@@ -34,5 +34,5 @@ func NewAutRepositoryStub() AuthRepository {
 	users := make(map[string]*User)
 	users["1"] = &User{Id: "1", Username: "username1", Password: "password1", CustomerId: 1}
 	users["2"] = &User{Id: "2", Username: "username2", Password: "password2", CustomerId: 2}
-	return &DefaultAuthRepository{users: users}
+	return &DefaultAuthRepositoryStub{users: users}
 }

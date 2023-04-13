@@ -24,9 +24,19 @@ func (us DefaultUserService) CreateUser(req dto.RegisterRequest) (*dto.RegisterR
 		Password:   req.Password,
 		CustomerId: req.CustomerId,
 	}
+	//call the repository method to save the user to the database
+	user, err := us.repo.CreateUser(domainUser)
+	if err != nil {
+		return nil, err
+	}
+
+	token, tokenErr := user.GenerateToken()
+	if tokenErr != nil {
+		return nil, tokenErr
+	}
 
 	return &dto.RegisterResponse{
-		Token: "mockToken",
+		Token: token,
 	}, nil
 }
 
