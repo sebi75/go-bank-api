@@ -13,7 +13,9 @@ type TokenService interface {
 	VerifyToken(tokenString string) (*jwt.Token, error)
 }
 
-type DefaultTokenService struct {}
+type DefaultTokenService struct {
+	secret []byte
+}
 
 func (sv DefaultTokenService) GenerateToken(user *domain.User) (string, error) {
 	claims := jwt.MapClaims{}
@@ -21,9 +23,8 @@ func (sv DefaultTokenService) GenerateToken(user *domain.User) (string, error) {
 	claims["user_id"] = user.Id
 	claims["role"] = user.Role
 
-	secretBytes := []byte(os.Getenv("JWT_SECRET"))
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(secretBytes)
+	tokenString, err := token.SignedString(sv.secret)
 
 	if err != nil {
 		logger.Error("Error while signing the token: " + err.Error())
@@ -34,9 +35,8 @@ func (sv DefaultTokenService) GenerateToken(user *domain.User) (string, error) {
 }
 
 func (sv DefaultTokenService) VerifyToken(tokenString string) (*jwt.Token, error) {
-	secretBytes := []byte(os.Getenv("JWT_SECRET"))
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return secretBytes, nil
+		return sv.secret, nil
 	})
 
 	if err != nil {
@@ -45,4 +45,10 @@ func (sv DefaultTokenService) VerifyToken(tokenString string) (*jwt.Token, error
 	}
 
 	return token, nil
+}
+
+func NewDefaultTokenService() DefaultTokenService {
+	return DefaultTokenService{
+		secret: []byte(os.Getenv("JWT_SECRET")),
+	}
 }
