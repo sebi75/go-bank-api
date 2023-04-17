@@ -32,6 +32,7 @@ func Start() {
 	})
 	router.HandleFunc("/auth/register", uh.Register).Methods(http.MethodPost)
 	router.HandleFunc("/auth/login", uh.Login).Methods(http.MethodPost)
+	router.HandleFunc("/auth/verify", uh.Verify).Methods(http.MethodGet)
 
 	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")

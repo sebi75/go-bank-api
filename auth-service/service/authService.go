@@ -4,15 +4,20 @@ import (
 	"banking-auth/domain"
 	"banking-auth/dto"
 	errs "banking-auth/error"
+	"os"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type AuthService interface {
 	CreateUser(dto.RegisterRequest) (*dto.RegisterResponse, *errs.AppError)
 	LoginUser(dto.LoginRequest) (*dto.LoginResponse, *errs.AppError)
+	Verify(map[string]string) (bool, *errs.AppError)
 }
 
 type DefaultAuthService struct {
 	repo domain.AuthRepository
+	rolePermissions domain.RolePermissions
 }
 
 func (us DefaultAuthService) CreateUser(req dto.RegisterRequest) (*dto.RegisterResponse, *errs.AppError) {
@@ -66,6 +71,51 @@ func (us DefaultAuthService) LoginUser(req dto.LoginRequest) (*dto.LoginResponse
 	}, nil
 }
 
+/*
+This method needs to verify both the validity of the token and the permissions
+of the user to access the route and perform the action
+*/
+func (us DefaultAuthService) Verify(urlParams map[string]string) (bool, error) {
+	//convert the jwt string to a JWT struct
+	if jwtStruct, err := jwtTokenFromString(urlParams["token"]); err != nil {
+		return false, err
+	} else {
+		if jwtStruct.Valid {
+			mapClaims := jwtStruct.Claims.(jwt.MapClaims)
+			//converting the JWT struct to a Claims struct
+			if claims, err := domain.BuildClaimsFromJwtMapClaims(mapClaims); err != nil {
+				return false, err
+			} else {
+				//check if the user has the right permissions to access the route
+				if claims.IsUserRole() {
+					if !claims.IsRequestVerifiedWithTokenClaims(urlParams) {
+						return false, nil
+					}
+				}
+
+				isAuthorizedRole := us.rolePermissions.IsAuthorizedFor(claims.Role, urlParams["routeName"])
+				return isAuthorizedRole, nil
+			}
+		} else {
+			return false, nil
+		}
+	}
+}
+
+func jwtTokenFromString(tokenString string) (*jwt.Token, error) {
+	secret := os.Getenv("JWT_SECRET")
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secret), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return token, nil
+}
+
 func NewUserService(repo domain.AuthRepository) DefaultAuthService {
-	return DefaultAuthService{repo: repo}
+	return DefaultAuthService{
+		repo: repo,
+		rolePermissions: domain.GetRolePermissions(),
+	}
 }
