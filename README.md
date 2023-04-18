@@ -77,6 +77,9 @@ To properly work with the monorepo in Visual Studio Code, create a go-bank-api.c
 		{
 			"path": "banking-service"
 		}
+		{
+			"path": "banking-lib"
+		}
 	]
 }
 ```
