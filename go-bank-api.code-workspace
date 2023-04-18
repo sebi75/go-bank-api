@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "banking-service"
+		},
+		{
+			"path": "banking-lib"
 		}
 	],
 	"settings": {}
