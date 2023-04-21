@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  banking-service:
+    build:
+      context: ./banking-service
+      dockerfile: Dockerfile
+    image: banking-service
+    ports:
+      - 8080:8080
+    depends_on:
+      - auth-service
+    env_file:
+      - ./banking-service/.env
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    image: auth-service
+    ports:
+      - 8081:8081
+    env_file:
+      - ./auth-service/.env

@@ -75,16 +75,16 @@ func (us DefaultAuthService) LoginUser(req dto.LoginRequest) (*dto.LoginResponse
 This method needs to verify both the validity of the token and the permissions
 of the user to access the route and perform the action
 */
-func (us DefaultAuthService) Verify(urlParams map[string]string) (bool, error) {
+func (us DefaultAuthService) Verify(urlParams map[string]string) (bool, *errs.AppError) {
 	//convert the jwt string to a JWT struct
 	if jwtStruct, err := jwtTokenFromString(urlParams["token"]); err != nil {
-		return false, err
+		return false, errs.NewBadRequestError("invalid token")
 	} else {
 		if jwtStruct.Valid {
 			mapClaims := jwtStruct.Claims.(jwt.MapClaims)
 			//converting the JWT struct to a Claims struct
 			if claims, err := domain.BuildClaimsFromJwtMapClaims(mapClaims); err != nil {
-				return false, err
+				return false, errs.NewBadRequestError("invalid token")
 			} else {
 				//check if the user has the right permissions to access the route
 				if claims.IsUserRole() {
