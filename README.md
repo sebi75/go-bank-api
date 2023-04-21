@@ -8,9 +8,9 @@ These instructions will help you set up and run the Go Bank API on your local ma
 
 ### Prerequisites
 
-- [Go](https://golang.org/dl/) (v1.17 or higher)
-- [Docker](https://www.docker.com/) (Optional, for running the services in containers)
-- A proper database setup for each service (e.g., PostgreSQL, MySQL, etc.)
+- Go (v1.17 or higher) - Optional, for local development without Docker
+- Docker (for running the services in containers)
+- Docker Compose (for orchestrating the containers)
 
 ### Installing
 
@@ -31,8 +31,7 @@ cd go-bank-api
 ```
 
 Set up the environment variables for each microservice.
-For example, create a .env file in the auth-service and banking-service
-directories with the appropriate configuration settings, such as:
+Rename the .env.example file to .env in the root directory of each microservice, and set the values for the environment variables. For example, in the auth-service/.env file, you should have something like this:
 
 ```sh
 DB_HOST=localhost
@@ -43,27 +42,15 @@ DB_NAME=yourdbname
 JWT_SECRET=yourjwtsecret
 ```
 
-Make sure to replace the values with your own settings.
+Make sure to replace the values with your own.
 
-Build each microservice:
+Build and run the microservices using Docker Compose. In the root directory of the project, run the following command:
 
 ```sh
-cd auth-service
-go build
-cd ../banking-service
-go build
+docker-compose up --build
 ```
 
-Run each microservice:
-
-# In the auth-service directory
-
-./auth-service
-
-# In the banking-service directory
-
-./banking-service
-Alternatively, you can use Docker to run the services in containers. Create a Dockerfile for each microservice and use docker-compose to orchestrate the containers.
+Docker Compose will build the images and start the containers for both services.
 
 Using the Monorepo in Visual Studio Code
 To properly work with the monorepo in Visual Studio Code, create a go-bank-api.code-workspace file in the root directory of the repository, and include the following configuration:
@@ -100,7 +87,3 @@ POST /customers: Create a new customer
 PUT /customers/{id}: Update a customer
 DELETE /customers/{id}: Delete a customer
 Refer to the API documentation for a complete list of endpoints and request/response formats.
-
-```
-
-```
